@@ -14,27 +14,17 @@ import csv
 url = 'https://www.worldometers.info/coronavirus/'
 response = requests.get(url)
 soup = BeautifulSoup(response.text, "html.parser")
-important_info = soup.findAll('div', {'class': 'maincounter-number'})
-
-# url = 'https://www.vnexpress.net/dich-viem-phoi-corona'
-# response = requests.get(url)
-# soup = BeautifulSoup(response.text, "html.parser")
-# important_info = soup.findAll('div')
-# def get_stats():
-#     for c in important_info:
-#         print(c)
-
-
+info = soup.findAll('div', {'class': 'maincounter-number'})
 
 def get_stats():
     with open('stats.txt', 'w', newline='') as file:
         for i, v in enumerate(('Cases', 'Deaths', 'Recovered')):
-            file.writelines(f'{v}: {important_info[i].get_text().strip()}\n')
+            file.writelines(f'{v}: {info[i].get_text().strip()}\n')
 
 def get_table():
     table = soup.find('table', {'id': 'main_table_countries'})
     table_body = table.find('tbody')
-    header = 'Country,Total\nCases,New\nCases,Total\nDeaths,New\nDeaths,Active\nCases,Total\nRecovered,Serious, Tot Cases/\n1M pop'.split(',')
+    header = 'Country,Total Cases,New Cases,Total Deaths,New Deaths,Active Cases,Total Recovered,Serious, Tot Cases/1M pop'.split(',')
     data = []
     rows = table_body.find_all('tr')
     tabulate.PRESERVE_WHITESPACE = True
@@ -68,10 +58,7 @@ def get_news():
             bullets = [x[i].text.strip().rstrip(' [source]') for i in range(len(x))]
             for x in bullets:
                 file.write(f". {x}\n")
-        # for line in file:
-        #     for word in delete_list:
-        #         line = line.replace(word, "")
-        #     file.write(line)
+       
 
 
 get_stats()
